@@ -13,12 +13,12 @@ export default function Login() {
     e.preventDefault();
     if (email && password) {
       try {
-        const response = await fetch('http://192.168.0.159:8000/login', {
+        const response = await fetch('https://backend.naiyo24.com/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
         });
-        
+
         if (response.ok) {
           const data = await response.json();
           localStorage.setItem('adminToken', data.access_token);
@@ -49,35 +49,35 @@ export default function Login() {
             <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Email Address</label>
             <div style={{ position: 'relative' }}>
               <Mail size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)', zIndex: 10 }} />
-              <input 
-                type="email" 
+              <input
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="neo-input" 
-                style={{ paddingLeft: '40px' }} 
+                className="neo-input"
+                style={{ paddingLeft: '40px' }}
                 placeholder="admin@naiyo24.com"
-                required 
+                required
               />
             </div>
           </div>
-          
+
           <div>
             <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Password</label>
             <div style={{ position: 'relative' }}>
               <Key size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)', zIndex: 10 }} />
-              <input 
-                type={showPassword ? "text" : "password"} 
+              <input
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="neo-input" 
-                style={{ paddingLeft: '40px', paddingRight: '40px' }} 
+                className="neo-input"
+                style={{ paddingLeft: '40px', paddingRight: '40px' }}
                 placeholder="••••••••"
-                required 
+                required
               />
-              <button 
-                type="button" 
-                onClick={() => setShowPassword(!showPassword)} 
-                className="icon-btn" 
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="icon-btn"
                 style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', zIndex: 10 }}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
