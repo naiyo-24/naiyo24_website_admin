@@ -1,1 +1,1 @@
-export const API_URL = 'https://backend.naiyo24.com/';
+export const API_URL = 'https://backend.naiyo24.com';

@@ -123,13 +123,13 @@ export default function Testimonials() {
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <div style={{ width: '36px', height: '36px', backgroundColor: 'var(--black)', color: 'var(--white)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.9rem' }}>
-                          {testimonial.author_name.substring(0, 2).toUpperCase()}
+                          {testimonial.author_name ? testimonial.author_name.substring(0, 2).toUpperCase() : ''}
                         </div>
-                        <strong>{testimonial.author_name}</strong>
+                        <strong>{testimonial.author_name || ''}</strong>
                       </div>
                     </td>
                     <td>{testimonial.designation}</td>
-                    <td>"{testimonial.content.substring(0, 50)}{testimonial.content.length > 50 ? '...' : ''}"</td>
+                    <td>"{testimonial.content ? testimonial.content.substring(0, 50) : ''}{testimonial.content && testimonial.content.length > 50 ? '...' : ''}"</td>
                     <td>
                       <div className="action-buttons">
                         <button className="icon-btn" onClick={() => handleDelete(testimonial.id)} style={{ color: 'red' }}><Trash2 size={18} /></button>
