@@ -1,1 +1,1 @@
-export const API_URL = 'http://192.168.0.159:8000';
+export const API_URL = 'https://backend.naiyo24.com/';
