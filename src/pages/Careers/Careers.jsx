@@ -6,12 +6,14 @@ export default function Careers() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [editingId, setEditingId] = useState(null);
 
   // Form State
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('tech');
   const [location, setLocation] = useState('');
   const [employmentType, setEmploymentType] = useState('Full-Time');
+  const [status, setStatus] = useState('Open');
   const [description, setDescription] = useState('');
 
   useEffect(() => {
@@ -33,18 +35,47 @@ export default function Careers() {
     }
   };
 
-  const handleAddJob = async (e) => {
+  const resetForm = () => {
+    setTitle('');
+    setCategory('tech');
+    setLocation('');
+    setEmploymentType('Full-Time');
+    setStatus('Open');
+    setDescription('');
+    setEditingId(null);
+  };
+
+  const handleOpenAdd = () => {
+    resetForm();
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEdit = (job) => {
+    setEditingId(job.id);
+    setTitle(job.title || '');
+    setCategory(job.category || 'tech');
+    setLocation(job.location || '');
+    setEmploymentType(job.employment_type || 'Full-Time');
+    setStatus(job.status || 'Open');
+    setDescription(job.description || '');
+    setIsModalOpen(true);
+  };
+
+  const handleSaveJob = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${API_URL}/jobs/`, {
-        method: 'POST',
+      const url = editingId ? `${API_URL}/jobs/${editingId}` : `${API_URL}/jobs/`;
+      const method = editingId ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method: method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title,
           category,
           location,
           employment_type: employmentType,
-          status: 'Open',
+          status,
           description
         })
       });
@@ -52,16 +83,13 @@ export default function Careers() {
       if (response.ok) {
         fetchJobs();
         setIsModalOpen(false);
-        setTitle('');
-        setCategory('tech');
-        setLocation('');
-        setEmploymentType('Full-Time');
-        setDescription('');
+        resetForm();
       } else {
-        alert('Failed to add job position');
+        alert(`Failed to ${editingId ? 'update' : 'add'} job position`);
       }
     } catch (error) {
-      console.error('Error adding job:', error);
+      console.error('Error saving job:', error);
+      alert('Error saving job position');
     }
   };
 
@@ -91,7 +119,7 @@ export default function Careers() {
             <RefreshCw size={18} style={{ display: 'inline', verticalAlign: 'text-bottom', marginRight: '6px' }} />
             Refresh
           </button>
-          <button className="neo-button primary" onClick={() => setIsModalOpen(true)}>
+          <button className="neo-button primary" onClick={handleOpenAdd}>
             <Plus size={18} style={{ display: 'inline', verticalAlign: 'text-bottom', marginRight: '6px' }} />
             Add Open Position
           </button>
@@ -128,7 +156,12 @@ export default function Careers() {
                     <td><span style={{ color: job.status === 'Open' ? 'green' : 'gray', fontWeight: 'bold' }}>{job.status}</span></td>
                     <td>
                       <div className="action-buttons">
-                        <button className="icon-btn" onClick={() => handleDelete(job.id)} style={{ color: 'red' }}><Trash2 size={18} /></button>
+                        <button className="icon-btn" onClick={() => handleOpenEdit(job)} style={{ color: 'var(--black)', marginRight: '12px' }}>
+                          <Edit2 size={18} />
+                        </button>
+                        <button className="icon-btn" onClick={() => handleDelete(job.id)} style={{ color: 'red' }}>
+                          <Trash2 size={18} />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -143,11 +176,11 @@ export default function Careers() {
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: '24px' }}>
           <div className="neo-card" style={{ width: '100%', maxWidth: '700px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-              <h2>Add Open Position</h2>
+              <h2>{editingId ? 'Edit Open Position' : 'Add Open Position'}</h2>
               <button className="icon-btn" onClick={() => setIsModalOpen(false)}><X size={24} /></button>
             </div>
             
-            <form onSubmit={handleAddJob}>
+            <form onSubmit={handleSaveJob}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
                 <div>
                   <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Job Title</label>
@@ -178,6 +211,16 @@ export default function Careers() {
                 </div>
               </div>
 
+              {editingId && (
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Position Status</label>
+                  <select className="neo-input" required value={status} onChange={(e) => setStatus(e.target.value)}>
+                    <option value="Open">Open</option>
+                    <option value="Closed">Closed</option>
+                  </select>
+                </div>
+              )}
+
               <div style={{ marginBottom: '24px' }}>
                 <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Job Description</label>
                 <textarea className="neo-input" rows="4" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Join our core engineering team to build high-performance..." required></textarea>
@@ -185,7 +228,7 @@ export default function Careers() {
 
               <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', paddingTop: '24px', borderTop: 'var(--border-thin) solid var(--border-light)' }}>
                 <button type="button" className="neo-button" onClick={() => setIsModalOpen(false)}>Cancel</button>
-                <button type="submit" className="neo-button primary">Publish Position</button>
+                <button type="submit" className="neo-button primary">{editingId ? 'Save Changes' : 'Publish Position'}</button>
               </div>
             </form>
           </div>

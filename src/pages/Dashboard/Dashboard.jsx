@@ -5,7 +5,11 @@ export default function Dashboard() {
   const [stats, setStats] = useState({
     queries: 0,
     subscribers: 0,
-    applications: 0
+    applications: 0,
+    projects: 0,
+    services: 0,
+    testimonials: 0,
+    careers: 0
   });
   const [loading, setLoading] = useState(true);
 
@@ -15,20 +19,40 @@ export default function Dashboard() {
 
   const fetchStats = async () => {
     try {
-      const [queriesRes, subsRes, appsRes] = await Promise.all([
+      const [
+        queriesRes,
+        subsRes,
+        appsRes,
+        projectsRes,
+        servicesRes,
+        testimonialsRes,
+        careersRes
+      ] = await Promise.all([
         fetch(`${API_URL}/query`),
         fetch(`${API_URL}/newsletter`),
-        fetch(`${API_URL}/apply`)
+        fetch(`${API_URL}/apply`),
+        fetch(`${API_URL}/projects`),
+        fetch(`${API_URL}/services`),
+        fetch(`${API_URL}/testimonials`),
+        fetch(`${API_URL}/jobs/`)
       ]);
 
       const queries = queriesRes.ok ? await queriesRes.json() : [];
       const subs = subsRes.ok ? await subsRes.json() : [];
       const apps = appsRes.ok ? await appsRes.json() : [];
+      const projects = projectsRes.ok ? await projectsRes.json() : [];
+      const services = servicesRes.ok ? await servicesRes.json() : [];
+      const testimonials = testimonialsRes.ok ? await testimonialsRes.json() : [];
+      const careers = careersRes.ok ? await careersRes.json() : [];
 
       setStats({
         queries: queries.length,
         subscribers: subs.length,
-        applications: apps.length
+        applications: apps.length,
+        projects: projects.length,
+        services: services.length,
+        testimonials: testimonials.length,
+        careers: careers.length
       });
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
@@ -59,7 +83,24 @@ export default function Dashboard() {
           <h3>Career Applications</h3>
           <p className="stat-value">{loading ? '...' : stats.applications}</p>
         </div>
+        <div className="stat-card">
+          <h3>Projects</h3>
+          <p className="stat-value">{loading ? '...' : stats.projects}</p>
+        </div>
+        <div className="stat-card">
+          <h3>Services</h3>
+          <p className="stat-value">{loading ? '...' : stats.services}</p>
+        </div>
+        <div className="stat-card">
+          <h3>Testimonials</h3>
+          <p className="stat-value">{loading ? '...' : stats.testimonials}</p>
+        </div>
+        <div className="stat-card">
+          <h3>Careers (Jobs)</h3>
+          <p className="stat-value">{loading ? '...' : stats.careers}</p>
+        </div>
       </div>
     </div>
-  )
+  );
 }
+
